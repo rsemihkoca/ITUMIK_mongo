@@ -15,7 +15,7 @@ class Constants:
 app = FastAPI()
 
 # MongoDB connection setup
-CONNECTION_STRING = os.environ.get("CONNECTION_STRING", "mongodb://localhost:27017")
+CONNECTION_STRING = os.environ.get("CONNECTION_STRING")
 client = MongoClient(CONNECTION_STRING)
 db = client.MIK_Database
 collection = db.MIK_Collection
