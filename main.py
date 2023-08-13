@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, field_validator
+from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 import os
 
@@ -14,6 +14,11 @@ class Constants:
 
 # FastAPI app initialization
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*']
+)
 
 # MongoDB connection setup
 CONNECTION_STRING = os.environ.get("CONNECTION_STRING")
