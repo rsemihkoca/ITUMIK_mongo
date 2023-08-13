@@ -9,6 +9,7 @@ class Constants:
     Floor01 = "Floor01"
     Floor02 = "Floor02"
     Floor03 = "Floor03"
+    TOPIC = "TOPIC"
     ALL_FLOORS = [Floor00, Floor01, Floor02, Floor03]
 
 # FastAPI app initialization
@@ -36,10 +37,10 @@ async def health_check():
 
 @app.post("/get_floor/")
 async def get_floor(payload: FloorQuery):
-    cursor = collection.find({"floor": payload.floor})
+    cursor = collection.find({Constants.TOPIC: {"$regex": f"^{payload.floor}/"}})
     floor_data = list(cursor)
     for doc in floor_data:
-        doc["_id"] = str(doc["_id"])  # Convert ObjectIDs to strings for JSON serialization
+        doc["_id"] = str(doc["_id"]["$oid"])  # Convert ObjectIDs to strings for JSON serialization
     return {"data": floor_data}
 
 if __name__ == "__main__":
