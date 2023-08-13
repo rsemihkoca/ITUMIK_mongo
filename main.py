@@ -21,26 +21,21 @@ client = MongoClient(CONNECTION_STRING)
 db = client.MIK_Database
 collection = db.MIK_Collection
 
-# Models
-class FloorQuery(BaseModel):
-    floor: str
-
-    @field_validator("floor")
-    def valid_floor(cls, value):
-        if value not in Constants.ALL_FLOORS:
-            raise ValueError(f"Floor should be one of {', '.join(Constants.ALL_FLOORS)}")
-        return value
-
 @app.get("/")
 async def health_check():
     return {"status": "ok"}
 
-@app.post("/get_floor/")
-async def get_floor(payload: FloorQuery):
-    cursor = collection.find({Constants.TOPIC: {"$regex": f"^{payload.floor}/"}})
+@app.get("/get_floor/")
+async def get_floor(floor: str):
+    # Validate floor manually
+    if floor not in Constants.ALL_FLOORS:
+        raise HTTPException(status_code=400, detail=f"Floor should be one of {', '.join(Constants.ALL_FLOORS)}")
+
+    cursor = collection.find({Constants.TOPIC: {"$regex": f"^{floor}/"}})
     floor_data = list(cursor)
     for doc in floor_data:
-        doc["_id"] = str(doc["_id"]["$oid"])  # Convert ObjectIDs to strings for JSON serialization
+        doc["_id"] = str(doc["_id"])  # Convert ObjectIDs to strings for JSON serialization
+
     return {"data": floor_data}
 
 if __name__ == "__main__":
