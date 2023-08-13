@@ -15,7 +15,7 @@ class Constants:
 # FastAPI app initialization
 app = FastAPI()
 
-origins = [""]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
