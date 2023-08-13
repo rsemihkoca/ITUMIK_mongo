@@ -50,4 +50,6 @@ async def get_floor(floor: str):
 
 if __name__ == "__main__":
     import uvicorn
+    print("Starting server...")
+    print("Current version: v0.1.2")
     uvicorn.run(app, host="0.0.0.0", port=8000)
