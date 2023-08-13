@@ -1,6 +1,13 @@
 # Use an official Python runtime as the parent image
 FROM python:3.10-alpine as compile-image
 
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV VIRTUAL_ENV=/opt/py310
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -14,19 +21,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Runtime stage
-FROM python:3.10-alpine as runtime-image
-
-# Copy Python dependencies and the application from the compile-image stage
-COPY --from=compile-image /root/.local /root/.local
-COPY --from=compile-image /app /app
+FROM compile-image as  runtime-image
 
 WORKDIR /app
-
-# Set the environment variable to ensure Python output is set straight to terminal (unbuffered)
-ENV PYTHONUNBUFFERED=1
 
 # Expose the port the app runs on
 EXPOSE 8000
 
 # Define the command to run the application using Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python3", "main.py"]
